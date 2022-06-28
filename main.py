@@ -27,25 +27,36 @@ C_ph = 4184 # specific heat capacity of wort liquid, J/kg/deg_C
 time_list = list(range(0,1000,10))
 
 def calc_wort_temp(t):
-    # return the temp in the wort (in deg C) at time t
+    # return the temp in the wort (in deg C) at time t (dimensions are seconds)
     return T_ci + (T_ho - T_ci) * math.exp(-(rho_c*Q_c*C_pc)/(rho_h*V_h_m3*C_ph)*((K-1)/K)*t)
 
 wort_temp_list_deg_C = []
 for t in time_list:
     wort_temp_list_deg_C.append(calc_wort_temp(t))
 
+def calc_exit_coolant_temp(T_h):
+    return T_h - (T_h-T_ci)/K
+
+exit_coolant_temp_list_deg_C = []
+for i in wort_temp_list_deg_C:
+    exit_coolant_temp_list_deg_C.append(calc_exit_coolant_temp(i))
+
+
 # plotting the points 
-plt.plot(time_list, wort_temp_list_deg_C)
+plt.plot(time_list, wort_temp_list_deg_C, color='g', label='Wort Temp')
+
+plt.plot(time_list, exit_coolant_temp_list_deg_C, color='b', label='Coolant Exit Temp')
 
 # naming the x axis
-plt.xlabel('Time, minutes')
+plt.xlabel('Time, seconds')
 # naming the y axis
-plt.ylabel('Temperature of the wort, degrees C')
+plt.ylabel('Temperature, degrees C')
 
 # giving a title to my graph
-plt.title('Immersion Heat Exchanger Performance')
+plt.title('Adiabatic Immersion Heat Exchanger Performance')
 
+# add marker at 25 degrees C (when the yeast should be pitched)
+plt.axhline(y=25, color='r', linestyle='-')
+plt.legend()
 # function to show the plot
 plt.show()
-
-print()
